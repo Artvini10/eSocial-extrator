@@ -9,10 +9,14 @@ import os
 from pathlib import Path
 
 # Change to project root
-os.chdir(Path(__file__).parent)
+PROJECT_ROOT = Path(__file__).parent.parent.resolve()
+os.chdir(PROJECT_ROOT)
+sys.path.insert(0, str(PROJECT_ROOT))
 
 print("=" * 70)
 print("COMPREHENSIVE PROJECT TEST SUITE")
+print(f"Project root: {PROJECT_ROOT}")
+print("=" * 70)
 print("=" * 70)
 
 # Test 1: Imports
@@ -28,7 +32,7 @@ imports_to_test = [
     ("WS Simulador", "from src.services.ws_simulador import WSEsocialSimulador"),
     ("Lineage", "from src.services.lineage import aplicar_historico"),
     ("Errors", "from src.common.errors import ErroExplicado"),
-    ("Writer", "from src.load.writer import escrever"),
+    ("Writer", "from src.load.writer import salvar_resultado_excel"),
     ("MTLS Client", "from src.services.mtls_client import criar_sessao_mtls_de_pfx"),
     ("XML Signer", "from src.services.xml_signer import assinar_xml"),
     ("Cert Manager", "from src.services.cert_manager import carregar_certificado_pfx"),
@@ -151,7 +155,7 @@ templates = ["src/templates/acesso.html", "src/templates/checklist.html"]
 template_errors = []
 for template_path in templates:
     if Path(template_path).exists():
-        with open(template_path) as f:
+        with open(template_path, encoding='utf-8', errors='ignore') as f:
             content = f.read()
             size = len(content)
             has_logo = "logo.png" in content

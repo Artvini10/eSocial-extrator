@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Resultado</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header>
+  <img src="/static/logo.png" alt="SinergyRH">
+  <h1>Extrator eSocial</h1>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Resultado da Execução</h2>
+
+    {% if not ok %}
+      <p style="color:#dc2626; font-weight:600;">{{ erro }}</p>
+      <a href="/"><button>Voltar</button></a>
+    {% else %}
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+        <div class="check-item" style="flex:1; min-width:260px;">
+          <label>Empresa</label>
+          <p><b>CNPJ:</b> {{ payload.cnpj }}</p>
+          <p><b>Ambiente:</b> {{ payload.ambiente }}</p>
+          <p><b>Período:</b> {{ payload.periodo }}</p>
+        </div>
+
+        <div class="check-item" style="flex:1; min-width:260px;">
+          <label>Execução</label>
+          <p><b>Qtd. eventos:</b> {{ payload.eventos_executados | length }}</p>
+          <p><b>Modo:</b> {{ payload.retornos.modo if payload.retornos and payload.retornos.modo else "N/A" }}</p>
+          <p><b>Status:</b> {{ payload.retornos.consulta.status if payload.retornos and payload.retornos.consulta else "N/A" }}</p>
+        </div>
+      </div>
+
+      <a href="/download/{{ arquivo }}"><button>Baixar Excel do Resultado</button></a>
+
+      <h3 style="margin-top:18px;">Eventos executados</h3>
+      <div class="check-item">
+        <p>{{ payload.eventos_executados | join(", ") }}</p>
+      </div>
+
+      <h3 style="margin-top:18px;">Retorno (debug)</h3>
+      <pre style="background:#0b1220;color:#e5e7eb;padding:14px;border-radius:8px;overflow:auto;max-height:360px;">
+{{ payload | tojson(indent=2) }}
+      </pre>
+    {% endif %}
+  </div>
+</div>
+
+</body>
+</html>

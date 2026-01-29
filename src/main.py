@@ -9,8 +9,10 @@ from src.services.ws_adapter import WSEsocialAdapter
 app = FastAPI(title="Extrator eSocial")
 
 BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
 
-app.mount("/static", StaticFiles(directory="src/static"), name="static")
+STATIC_DIR.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.include_router(router)
 
 @app.post("/executar_ws")

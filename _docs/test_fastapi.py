@@ -49,8 +49,7 @@ try:
     response = client.post("/acesso", data={
         "cnpj": "12345678901234",
         "ambiente": "producao_restrita",
-        "cert_tipo": "A1",
-        "lgpd": "on"
+        "certificado": "A1"
     }, follow_redirects=True)
     print(f"    Status: {response.status_code}")
     if response.status_code == 200:
