@@ -1,0 +1,146 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                 DOCUMENTOS SEPARADOS EM PASTA DEDICADA                      ║
+║                           ✅ IMPLEMENTADO                                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📁 ESTRUTURA FINAL OTIMIZADA
+═══════════════════════════════════════════════════════════════════════════════
+
+extrator-esocial/
+│
+├── 📄 docs/                          [NOVO] Documentação Word
+│   ├── README.md                     Guia dos documentos
+│   ├── eSocial_Extractor_Documentation.docx         (English)
+│   └── eSocial_Extractor_Documentacao_PTBR.docx    (Português)
+│
+├── 📚 _docs/                         Scripts, testes e guias
+│   ├── README.md
+│   ├── *.md                          Guias e referências
+│   ├── *.py                          Scripts e testes
+│   └── *.txt                         Resumos
+│
+├── 💻 src/                           Código-fonte
+│   ├── main.py
+│   ├── common/
+│   ├── services/
+│   ├── routes/
+│   ├── load/
+│   ├── transform/
+│   ├── static/
+│   └── templates/
+│
+├── ⚙️  config/                       Configurações
+├── 📝 logs/                          Logs
+├── 📄 outputs/                       Saídas
+├── 🐙 .github/                       GitHub
+│
+├── 📖 README.md                      Documentação principal
+├── 📚 DOCUMENTACAO.md                Guia de navegação
+├── 📦 requirements.txt               Dependências
+├── 🔐 .env                           Variáveis de ambiente
+└── 🔧 .env.example                  Exemplo
+
+
+✨ BENEFÍCIOS DA SEPARAÇÃO
+═══════════════════════════════════════════════════════════════════════════════
+
+📄 Documentos Word em Pasta Separada (`docs/`)
+   ✓ Fácil localizar documentação
+   ✓ Estrutura profissional
+   ✓ Separação clara de responsabilidades
+
+📚 Scripts/Testes em `_docs/`
+   ✓ Automação e utilitários organizados
+   ✓ Testes centralizados
+   ✓ Pronto para CI/CD
+
+💻 Código em `src/`
+   ✓ Código-fonte protegido
+   ✓ Estrutura MVC clara
+
+📊 Resultado Final
+   ✓ Projeto PROFISSIONAL
+   ✓ Estrutura CLARA
+   ✓ Fácil de NAVEGAR
+
+
+🎯 COMO ACESSAR CADA COISA
+═══════════════════════════════════════════════════════════════════════════════
+
+Documentação Word (Profissional):
+   → docs/eSocial_Extractor_Documentation.docx
+   → docs/eSocial_Extractor_Documentacao_PTBR.docx
+
+Guias de Manutenção:
+   → _docs/README.md
+   → _docs/README_AUTOMATIZACAO.md
+   → _docs/MANUTENCAO_DOCUMENTACAO.md
+
+Testes:
+   → python _docs/test_project.py
+   → python _docs/test_fastapi.py
+
+Atualizar Documentação:
+   → python _docs/update_all_documentation.py
+
+Começar:
+   → README.md (raiz)
+   → DOCUMENTACAO.md (guia de navegação)
+
+
+📈 COMPARAÇÃO: ANTES vs DEPOIS
+═══════════════════════════════════════════════════════════════════════════════
+
+ANTES (v1):
+  extrator-esocial/
+  ├── _docs/ (tudo junto)
+  │   ├── eSocial_Extractor_Documentation.docx
+  │   ├── eSocial_Extractor_Documentacao_PTBR.docx
+  │   ├── *.md (guias)
+  │   ├── *.py (scripts)
+  │   └── *.txt
+  └── ...
+
+DEPOIS (v2) - Otimizado:
+  extrator-esocial/
+  ├── docs/
+  │   ├── eSocial_Extractor_Documentation.docx     ← Documentação
+  │   ├── eSocial_Extractor_Documentacao_PTBR.docx ← Documentação
+  │   └── README.md
+  ├── _docs/                                        ← Scripts/Testes/Guias
+  │   ├── *.md
+  │   ├── *.py
+  │   └── ...
+  └── ...
+
+
+🔄 GIT COMMITS
+═══════════════════════════════════════════════════════════════════════════════
+
+Commit: 2a71a44
+Message: Move Word documents to separate docs folder for better organization
+
+Detalhes:
+  ✓ Movidos 2 arquivos .docx para docs/
+  ✓ Criado docs/README.md
+  ✓ Atualizado _docs/README.md
+  ✓ Atualizado DOCUMENTACAO.md
+
+
+✅ STATUS FINAL
+═══════════════════════════════════════════════════════════════════════════════
+
+Projeto:        ✓ Estrutura Otimizada
+Documentação:   ✓ Separada em Pasta Dedicada
+Scripts:        ✓ Organizados em _docs/
+Código:         ✓ Mantido em src/
+Funcionalidade: ✓ 100% Preservada
+GitHub:         ✓ Sincronizado
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            Estrutura Pronta! 🚀
+═══════════════════════════════════════════════════════════════════════════════
+
+Data: 29/01/2026
+Status: ✅ Completo e Sincronizado
