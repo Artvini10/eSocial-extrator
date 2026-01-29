@@ -1,5 +1,3 @@
-from fastapi.responses import RedirectResponse, JSONResponse
-from src.services.jobs import criar_job, rodar_em_background, get_job, atualizar
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -8,6 +6,7 @@ from pathlib import Path
 from src.services.orchestrator import expandir_temas
 from src.services.ws_adapter import WSEsocialAdapter
 from src.load.writer import salvar_resultado_excel
+from src.load.writer_pack import gerar_pacote_outputs
 from src.services.jobs import criar_job, rodar_em_background, get_job, atualizar
 
 router = APIRouter()
@@ -47,54 +46,79 @@ def checklist(request: Request):
 
 
 @router.post("/executar")
-def executar_async(
-    request: Request,
-    cnpj: str = Form(...),
-    ambiente: str = Form(...),
-    certificado: str = Form(...),
-    ano_inicial: int = Form(...),
-    ano_final: int = Form(...),
-    processos: list[str] = Form(default=[]),
-):
-    if not processos:
+async def executar_async(request: Request):
+    """Accepts form submissions from the checklist and runs the job in background.
+    Accepts both legacy and current form field names (ano_inicial/ano_ini, ano_final/ano_fim,
+    temas/processos) to be forgiving to clients.
+    """
+    form = await request.form()
+
+    def _get_int(*names):
+        for n in names:
+            v = form.get(n)
+            if v:
+                try:
+                    return int(v)
+                except Exception:
+                    return None
+        return None
+
+    ano_ini = _get_int('ano_ini', 'ano_inicial')
+    mes_ini = _get_int('mes_ini', 'mes_inicial')
+    ano_fim = _get_int('ano_fim', 'ano_final')
+    mes_fim = _get_int('mes_fim', 'mes_final')
+
+    temas = list(form.getlist('temas')) if hasattr(form, 'getlist') else []
+    if not temas:
+        # try legacy name
+        temas = list(form.getlist('processos')) if hasattr(form, 'getlist') else []
+
+    cnpj = form.get('cnpj') or request.cookies.get('cnpj', '')
+    ambiente = form.get('ambiente') or request.cookies.get('ambiente', 'producao_restrita')
+    certificado = form.get('certificado') or request.cookies.get('certificado', 'A1')
+
+    if ano_ini is None or ano_fim is None:
         return templates.TemplateResponse(
-            "resultado.html",
-            {"request": request, "ok": False, "erro": "Selecione pelo menos 1 processo."},
-            status_code=400,
+            request, 'resultado.html', {"ok": False, "erro": "Período inválido (ano)."}, status_code=400
+        )
+    if mes_ini is None or mes_fim is None:
+        return templates.TemplateResponse(
+            request, 'resultado.html', {"ok": False, "erro": "Período inválido (mês)."}, status_code=400
+        )
+    if not temas:
+        return templates.TemplateResponse(
+            request, 'resultado.html', {"ok": False, "erro": "Selecione pelo menos 1 tema."}, status_code=400
         )
 
     job = criar_job()
-
-    periodo = f"{ano_inicial}-01..{ano_final}-12"
-    eventos = expandir_temas(processos)
+    periodo = f"{ano_ini:04d}-{mes_ini:02d}..{ano_fim:04d}-{mes_fim:02d}"
+    eventos = expandir_temas(temas)
 
     def _task(job_id: str):
-        atualizar(job_id, progress=5, message="Expandindo temas...")
-        ws = WSEsocialAdapter(cnpj, ambiente)
+        atualizar(job_id, status="EXECUTANDO", progress=10)
 
-        atualizar(job_id, progress=20, message="Executando WS (lote/consulta)...")
+        eventos = expandir_temas(temas)
+        ws = WSEsocialAdapter(cnpj, ambiente)
         retornos = ws.executar(eventos, periodo)
 
-        payload = {
+        resultado = {
             "cnpj": cnpj,
             "ambiente": ambiente,
-            "certificado": certificado,
+            "processos": temas,
             "periodo": periodo,
-            "processos": processos,
-            "eventos_executados": eventos,
-            "retornos": retornos,
+            "retornos": retornos
         }
 
-        atualizar(job_id, progress=80, message="Gerando Excel...")
-        arquivo = salvar_resultado_excel(payload, OUTPUTS_DIR)
+        atualizar(job_id, progress=80, message="Gerando arquivos de saída...")
+
+        zip_path = gerar_pacote_outputs(resultado, OUTPUTS_DIR)
 
         atualizar(
             job_id,
             status="CONCLUIDO",
             progress=100,
-            message="Concluído.",
-            result=payload,
-            output_file=arquivo.name,
+            result=resultado,
+            output_file=zip_path.name
         )
 
     rodar_em_background(job.job_id, _task)

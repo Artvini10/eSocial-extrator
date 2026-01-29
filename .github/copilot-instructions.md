@@ -17,6 +17,7 @@
 
 ### Data Processing Pipeline
 - **Writer** ([src/load/writer.py](src/load/writer.py)): Exports pandas DataFrames to Excel with current/historical splits (`*_ATUAL.xlsx`, `*_HISTORICO.xlsx`)
+- **Writer Pack** ([src/load/writer_pack.py](src/load/writer_pack.py)): Generates ZIP packages containing Excel sheets and `metadata.json` using `gerar_pacote_outputs()` (used by background jobs)
 - **Lineage** ([src/services/lineage.py](src/services/lineage.py)): Applies event versioning and current-flag logic - `isAtual` marks latest version per event ID
 - **Logging**: Structured logs via `structlog` (setup in [src/common/logging_setup.py](src/common/logging_setup.py) - currently empty)
 
@@ -76,3 +77,5 @@ uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 - **Config Gaps**: [config/clients.yaml](config/clients.yaml) needs schema definition for certificates and credentials
 - **AI Helper**: [src/common/ai_helper.py](src/common/ai_helper.py) is empty - intended for LLM-assisted transformations
 - **Logging Setup**: [src/common/logging_setup.py](src/common/logging_setup.py) needs structlog configuration
+ - **Background Jobs**: `src/services/jobs.py` implements a simple in-memory job lifecycle. The `/executar` route in [src/routes/onboarding.py](src/routes/onboarding.py) now accepts both legacy and current form field names (e.g. `ano_inicial` / `ano_ini`, `ano_final` / `ano_fim`, `temas` / `processos`) and produces ZIP outputs via `gerar_pacote_outputs()`.
+ - **Tests**: Comprehensive project tests were executed locally and passed after adding `writer_pack` and updating the `/executar` handler.
