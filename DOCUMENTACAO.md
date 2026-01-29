@@ -20,11 +20,14 @@ extrator-esocial/
 
 ## 📖 Acessar Documentação
 
-### Documentação Word (Bilíngue)
+### Documentação Word (Bilíngue) - Em Pasta Separada
 ```bash
 # Abrir documentação
-_docs/eSocial_Extractor_Documentation.docx         (English)
-_docs/eSocial_Extractor_Documentacao_PTBR.docx    (Português)
+docs/eSocial_Extractor_Documentation.docx         (English)
+docs/eSocial_Extractor_Documentacao_PTBR.docx    (Português)
+
+# Ou ver README da pasta docs:
+docs/README.md
 ```
 
 ### Guias Rápidos

@@ -4,9 +4,10 @@ Esta pasta contém toda a documentação, relatórios, testes e scripts de gera�
 
 ## 📁 Conteúdo
 
-### 📖 Documentação Principal
-- **eSocial_Extractor_Documentation.docx** - Documentação em inglês (Word)
-- **eSocial_Extractor_Documentacao_PTBR.docx** - Documentação em português (Word)
+### 📖 Documentação Principal (em pasta separada)
+- **../docs/eSocial_Extractor_Documentation.docx** - Documentação em inglês (Word)
+- **../docs/eSocial_Extractor_Documentacao_PTBR.docx** - Documentação em português (Word)
+- **../docs/README.md** - Guia para os documentos Word
 
 ### 📝 Guias e Referências
 - **README_AUTOMATIZACAO.md** - Quick start para o sistema de automação de documentação
