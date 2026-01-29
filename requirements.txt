@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+jinja2
+python-dotenv
+pandas
+openpyxl
+pyarrow
+lxml
+httpx
+rich
+structlog
+typer
+playwright
+cryptography
+signxml

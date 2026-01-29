@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Checklist eSocial</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-width: 220px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+        }
+
+        label {
+            display: block;
+            margin: 8px 0;
+        }
+
+        .grupo {
+            margin-top: 15px;
+        }
+
+        .periodo {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .periodo > div {
+            min-width: 180px;
+        }
+
+        select {
+            padding: 8px;
+            width: 100%;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 14px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+
+        .meta {
+            color: #6b7280;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .resultado {
+            margin-top: 24px;
+            background: #0b1020;
+            color: #e5e7eb;
+            padding: 14px;
+            border-radius: 10px;
+            overflow: auto;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        <img src="/static/logo.png" alt="SinergyRH">
+    </div>
+
+    <h1>Checklist de Extração eSocial</h1>
+    <p class="meta">CNPJ: <b>{{ cnpj }}</b> | Ambiente: <b>{{ ambiente }}</b> | Certificado: <b>{{ cert_tipo }}</b></p>
+
+    <form action="/checklist" method="post">
+
+        <h2>Cadastros do Empregador</h2>
+        <div class="grupo">
+            <label><input type="checkbox" name="temas" value="Estrutura do Empregador"> Estrutura do Empregador (tabelas)</label>
+        </div>
+
+        <h2>Trabalhadores e Vínculos</h2>
+        <div class="grupo">
+            <label><input type="checkbox" name="temas" value="Vinculos de Emprego"> Vínculos de Emprego</label>
+            <label><input type="checkbox" name="temas" value="Trabalhadores sem Vinculo"> Trabalhadores sem Vínculo</label>
+        </div>
+
+        <h2>Dependentes e Beneficiários</h2>
+        <div class="grupo">
+            <label><input type="checkbox" name="temas" value="Dependentes"> Dependentes</label>
+            <label><input type="checkbox" name="temas" value="Beneficiarios Pensao Saude"> Beneficiários (Pensão / Saúde)</label>
+        </div>
+
+        <h2>Saúde e Segurança do Trabalho (SST)</h2>
+        <div class="grupo">
+            <label><input type="checkbox" name="temas" value="SST Acidentes Saude"> Acidentes e Saúde Ocupacional</label>
+            <label><input type="checkbox" name="temas" value="SST Riscos EPIs"> Riscos Ambientais e EPIs</label>
+        </div>
+
+        <h2>Folha, Pagamentos e Tributos</h2>
+        <div class="grupo">
+            <label><input type="checkbox" name="temas" value="Remuneracoes Folha"> Remunerações (Folha)</label>
+            <label><input type="checkbox" name="temas" value="Pagamentos Deducoes"> Pagamentos e Deduções</label>
+        </div>
+
+        <h2>Controle Fiscal</h2>
+        <div class="grupo">
+            <label><input type="checkbox" name="temas" value="Fechamentos Reaberturas"> Fechamentos e Reaberturas</label>
+            <label><input type="checkbox" name="temas" value="Exclusoes Retificacoes"> Exclusões e Retificações</label>
+        </div>
+
+        <h2>Período</h2>
+        <div class="periodo">
+            <div>
+                <label>Ano Inicial</label>
+                <select name="ano_ini" required>
+                    {% for y in range(2018, 2027) %}
+                        <option value="{{ y }}">{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Mês Inicial</label>
+                <select name="mes_ini" required>
+                    {% for m in range(1, 13) %}
+                        <option value="{{ m }}">{{ "%02d"|format(m) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Ano Final</label>
+                <select name="ano_fim" required>
+                    {% for y in range(2018, 2027) %}
+                        <option value="{{ y }}">{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Mês Final</label>
+                <select name="mes_fim" required>
+                    {% for m in range(1, 13) %}
+                        <option value="{{ m }}">{{ "%02d"|format(m) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <button type="submit">Executar Extração</button>
+    </form>
+
+    {% if resultado %}
+        <div class="resultado">{{ resultado | tojson(indent=2) }}</div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

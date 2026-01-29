@@ -1,0 +1,122 @@
+:root {
+  --primary: #0f3c60;
+  --secondary: #1f6aa5;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #2c2c2c;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+header img {
+  height: 48px;
+}
+
+header h1 {
+  font-size: 20px;
+  margin: 0;
+  color: var(--primary);
+}
+
+.container {
+  max-width: 960px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+.field label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field small {
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.check-item {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.check-item label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.check-item p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.check-item ul {
+  margin: 8px 0 0 18px;
+  font-size: 13px;
+  color: #374151;
+}
+
+button {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.meta b { color: var(--primary); }

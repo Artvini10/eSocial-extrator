@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso ao eSocial</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #fff;
+            padding: 30px;
+            width: 420px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+
+        .erro {
+            color: #dc2626;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .logo img {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">
+        <img src="/static/logo.png" alt="SinergyRH">
+    </div>
+
+    <h1>Acesso ao eSocial</h1>
+
+    <form onsubmit="return validarFormulario()" action="/acesso" method="post">
+        <label>CNPJ Base</label>
+        <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+
+        <label>Ambiente</label>
+        <select name="ambiente" required>
+            <option value="">Selecione</option>
+            <option value="producao">Produção</option>
+            <option value="producao_restrita">Produção Restrita</option>
+        </select>
+
+        <label>Certificado</label>
+        <select name="cert_tipo" required>
+            <option value="">Selecione</option>
+            <option value="A1">A1</option>
+            <option value="A3">A3</option>
+        </select>
+
+        <label>
+            <input type="checkbox" name="lgpd" value="1" required>
+            Aceito o tratamento de dados (LGPD)
+        </label>
+
+        <div class="erro" id="erro"></div>
+
+        <button type="submit">Continuar</button>
+    </form>
+</div>
+
+<script>
+function validarFormulario() {
+    const cnpj = document.getElementById("cnpj").value;
+    const erro = document.getElementById("erro");
+
+    if (!validarCNPJ(cnpj)) {
+        erro.innerText = "CNPJ inválido. Verifique o número informado.";
+        return false;
+    }
+
+    erro.innerText = "";
+    return true;
+}
+
+function validarCNPJ(cnpj) {
+    cnpj = cnpj.replace(/[^\d]+/g,'');
+
+    if (cnpj.length !== 14) return false;
+    if (/^(\d)\1+$/.test(cnpj)) return false;
+
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+    }
+
+    let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado != digitos.charAt(0)) return false;
+
+    tamanho++;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+    }
+
+    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    return resultado == digitos.charAt(1);
+}
+</script>
+
+</body>
+</html>

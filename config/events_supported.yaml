@@ -1,0 +1,31 @@
+Vinculos:
+  - S-2190
+  - S-2200
+  - S-2205
+  - S-2206
+  - S-2299
+
+Dependentes:
+  - S-2200
+  - S-2205
+  - S-1210
+
+Folha:
+  - S-1200
+  - S-1202
+  - S-1207
+
+Pagamentos:
+  - S-1210
+
+SST:
+  - S-2210
+  - S-2220
+  - S-2240
+
+Fechamento:
+  - S-1298
+  - S-1299
+
+Exclusoes:
+  - S-3000
