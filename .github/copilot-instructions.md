@@ -71,11 +71,32 @@ uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 3. **Custom Transformations**: Implement in [src/transform/](src/transform/) (currently empty)
 4. **Error Scenarios**: Use `ErroExplicado` for structured error reporting
 
+## Recent Updates (January 2026)
+
+### Output Package Generation
+- **Writer Pack Module** ([src/load/writer_pack.py](src/load/writer_pack.py)): Generates ZIP archives containing Excel sheets and metadata
+  - Current (`_ATUAL.xlsx`) and historical (`_HISTORICO.xlsx`) splits per theme
+  - Normalized columns: `evento`, `periodo`, `statusProc`, `nrRecibo`, `isAtual`, `versao`, `dtRecepcao`
+  - `execucao.json` metadata audit file
+  - Graceful fallback when transform layer unavailable
+- **Transform Integration**: Supports `normalizar_funcionarios()` + `aplicar_lineage_simplificado()` from [src/transform/funcionarios.py](src/transform/funcionarios.py)
+
+### Background Job System
+- **Job Lifecycle** ([src/services/jobs.py](src/services/jobs.py)): In-memory job store with background execution
+- **POST /executar Enhancements**:
+  - Async handler for concurrency
+  - Backward-compatible field names: `ano_inicial`/`ano_ini`, `ano_final`/`ano_fim`, `temas`/`processos`
+  - Raw form parsing for flexibility
+  - Progress tracking: EXECUTANDO → CONCLUIDO (0-100%)
+  - ZIP package generation via `gerar_pacote_outputs()`
+
+### Test Status
+✅ **All Tests Passing**: Project imports, FastAPI routes, templates, configuration, server startup (port 8000)
+
 ## Important Notes
 - **eSocial API Polling**: `ws_adapter.consultar()` expects hardcoded sleep - should be replaced with exponential backoff
 - **Transform Layer**: [src/transform/](src/transform/) is empty and ready for data mapping logic
 - **Config Gaps**: [config/clients.yaml](config/clients.yaml) needs schema definition for certificates and credentials
 - **AI Helper**: [src/common/ai_helper.py](src/common/ai_helper.py) is empty - intended for LLM-assisted transformations
 - **Logging Setup**: [src/common/logging_setup.py](src/common/logging_setup.py) needs structlog configuration
- - **Background Jobs**: `src/services/jobs.py` implements a simple in-memory job lifecycle. The `/executar` route in [src/routes/onboarding.py](src/routes/onboarding.py) now accepts both legacy and current form field names (e.g. `ano_inicial` / `ano_ini`, `ano_final` / `ano_fim`, `temas` / `processos`) and produces ZIP outputs via `gerar_pacote_outputs()`.
- - **Tests**: Comprehensive project tests were executed locally and passed after adding `writer_pack` and updating the `/executar` handler.
+- **Lineage Integration**: [src/services/lineage.py](src/services/lineage.py) provides versioning; new `writer_pack` integrates it for output generation
