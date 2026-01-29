@@ -108,6 +108,57 @@
             font-size: 14px;
             min-height: 20px;
         }
+
+        .status-cnpj {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 13px;
+            min-height: 20px;
+        }
+
+        .status-cnpj.valido {
+            color: #16a34a;
+        }
+
+        .status-cnpj.invalido {
+            color: #dc2626;
+        }
+
+        .status-cnpj.pendente {
+            color: #9333ea;
+        }
+
+        .status-icon {
+            font-size: 16px;
+        }
+
+        #cnpj.valido {
+            border-color: #16a34a;
+            background-color: #f0fdf4;
+        }
+
+        #cnpj.invalido {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+
+        #cnpj:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        button:disabled:hover {
+            background: #9ca3af;
+        }
     </style>
 </head>
 <body>
@@ -124,8 +175,9 @@
         <form onsubmit="return validarFormulario()" action="/acesso" method="post">
             <div class="field">
                 <label>CNPJ Base</label>
-                <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+                <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required maxlength="18">
                 <small>Informe o CNPJ base do empregador para consulta no eSocial.</small>
+                <div class="status-cnpj" id="statusCNPJ"></div>
             </div>
 
             <div class="field">
@@ -160,57 +212,169 @@
                 <div id="erro"></div>
             </div>
 
-            <button type="submit">Continuar</button>
+            <button type="submit" id="btnSubmit" disabled>Continuar</button>
         </form>
     </div>
 </div>
 
 <script>
-function validarFormulario() {
-    const cnpj = document.getElementById("cnpj").value;
-    const erro = document.getElementById("erro");
+// CNPJ de teste para desenvolvimento
+const CNPJ_TESTE = "11444777000161";
 
-    if (!validarCNPJ(cnpj)) {
-        erro.innerText = "CNPJ inválido. Verifique o número informado.";
-        return false;
+// Função para formatar CNPJ enquanto usuário digita
+function formatarCNPJ(valor) {
+    // Remove tudo que não é número
+    let numeros = valor.replace(/\D/g, '');
+    
+    // Limita a 14 dígitos
+    numeros = numeros.substring(0, 14);
+    
+    // Aplica a formatação XX.XXX.XXX/XXXX-XX
+    if (numeros.length > 0) {
+        if (numeros.length <= 2) {
+            return numeros;
+        } else if (numeros.length <= 5) {
+            return numeros.substring(0, 2) + '.' + numeros.substring(2);
+        } else if (numeros.length <= 8) {
+            return numeros.substring(0, 2) + '.' + numeros.substring(2, 5) + '.' + numeros.substring(5);
+        } else if (numeros.length <= 12) {
+            return numeros.substring(0, 2) + '.' + numeros.substring(2, 5) + '.' + numeros.substring(5, 8) + '/' + numeros.substring(8);
+        } else {
+            return numeros.substring(0, 2) + '.' + numeros.substring(2, 5) + '.' + numeros.substring(5, 8) + '/' + numeros.substring(8, 12) + '-' + numeros.substring(12);
+        }
     }
-
-    erro.innerText = "";
-    return true;
+    return '';
 }
 
+// Função para validar CNPJ
 function validarCNPJ(cnpj) {
-    cnpj = cnpj.replace(/[^\d]+/g,'');
-
-    if (cnpj.length !== 14) return false;
-    if (/^(\d)\1+$/.test(cnpj)) return false;
-
-    let tamanho = cnpj.length - 2;
-    let numeros = cnpj.substring(0, tamanho);
-    let digitos = cnpj.substring(tamanho);
+    // Remove formatação
+    const numeros = cnpj.replace(/\D/g, '');
+    
+    // Verifica se tem 14 dígitos
+    if (numeros.length !== 14) return false;
+    
+    // Verifica se não é sequência repetida (ex: 11111111111111)
+    if (/^(\d)\1+$/.test(numeros)) return false;
+    
+    // Valida primeiro dígito verificador
+    let tamanho = numeros.length - 2;
+    let numeros_base = numeros.substring(0, tamanho);
+    let digitos = numeros.substring(tamanho);
     let soma = 0;
     let pos = tamanho - 7;
 
     for (let i = tamanho; i >= 1; i--) {
-        soma += numeros.charAt(tamanho - i) * pos--;
+        soma += numeros_base.charAt(tamanho - i) * pos--;
         if (pos < 2) pos = 9;
     }
 
     let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
     if (resultado != digitos.charAt(0)) return false;
 
+    // Valida segundo dígito verificador
     tamanho++;
-    numeros = cnpj.substring(0, tamanho);
+    numeros_base = numeros.substring(0, tamanho);
     soma = 0;
     pos = tamanho - 7;
 
     for (let i = tamanho; i >= 1; i--) {
-        soma += numeros.charAt(tamanho - i) * pos--;
+        soma += numeros_base.charAt(tamanho - i) * pos--;
         if (pos < 2) pos = 9;
     }
 
     resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
     return resultado == digitos.charAt(1);
+}
+
+// Inicializar eventos do CNPJ no carregamento
+document.addEventListener('DOMContentLoaded', function() {
+    const inputCNPJ = document.getElementById('cnpj');
+    const statusCNPJ = document.getElementById('statusCNPJ');
+    const btnSubmit = document.getElementById('btnSubmit');
+    
+    // Event listener para input
+    inputCNPJ.addEventListener('input', function(e) {
+        let valor = e.target.value;
+        let formatado = formatarCNPJ(valor);
+        
+        // Atualiza o valor do input com formatação
+        if (formatado !== valor) {
+            e.target.value = formatado;
+        }
+        
+        // Valida e atualiza status
+        atualizarStatusCNPJ(formatado, statusCNPJ, btnSubmit);
+    });
+    
+    // Event listener para quando o campo perde foco
+    inputCNPJ.addEventListener('blur', function(e) {
+        const cnpj = e.target.value;
+        // Se campo estiver vazio, limpa o status
+        if (cnpj.length === 0) {
+            statusCNPJ.innerHTML = '';
+            btnSubmit.disabled = true;
+            e.target.classList.remove('valido', 'invalido');
+        }
+    });
+});
+
+// Função para atualizar status visual do CNPJ
+function atualizarStatusCNPJ(cnpj, statusElement, btnSubmit) {
+    const numeros = cnpj.replace(/\D/g, '');
+    
+    if (numeros.length === 0) {
+        statusElement.innerHTML = '';
+        statusElement.classList.remove('valido', 'invalido', 'pendente');
+        btnSubmit.disabled = true;
+        document.getElementById('cnpj').classList.remove('valido', 'invalido');
+        return;
+    }
+    
+    if (numeros.length < 14) {
+        statusElement.innerHTML = '<span class="status-icon">⏳</span> Digite todos os números...';
+        statusElement.classList.remove('valido', 'invalido');
+        statusElement.classList.add('pendente');
+        btnSubmit.disabled = true;
+        document.getElementById('cnpj').classList.remove('valido', 'invalido');
+        return;
+    }
+    
+    // Validar CNPJ (aceita CNPJ de teste ou CNPJs válidos reais)
+    const ehValido = validarCNPJ(numeros) || numeros === CNPJ_TESTE;
+    
+    if (ehValido) {
+        statusElement.innerHTML = '<span class="status-icon">✓</span> CNPJ válido';
+        statusElement.classList.remove('invalido', 'pendente');
+        statusElement.classList.add('valido');
+        btnSubmit.disabled = false;
+        document.getElementById('cnpj').classList.remove('invalido');
+        document.getElementById('cnpj').classList.add('valido');
+    } else {
+        statusElement.innerHTML = '<span class="status-icon">✗</span> CNPJ inválido';
+        statusElement.classList.remove('valido', 'pendente');
+        statusElement.classList.add('invalido');
+        btnSubmit.disabled = true;
+        document.getElementById('cnpj').classList.remove('valido');
+        document.getElementById('cnpj').classList.add('invalido');
+    }
+}
+
+function validarFormulario() {
+    const cnpj = document.getElementById("cnpj").value;
+    const erro = document.getElementById("erro");
+    const numeros = cnpj.replace(/\D/g, '');
+    
+    // Validação final no submit
+    const ehValido = validarCNPJ(numeros) || numeros === CNPJ_TESTE;
+    
+    if (!ehValido) {
+        erro.innerText = "CNPJ inválido. Verifique o número informado.";
+        return false;
+    }
+
+    erro.innerText = "";
+    return true;
 }
 </script>
 
