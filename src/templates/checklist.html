@@ -172,13 +172,13 @@
     </header>
 
     <div class="meta">
-        Você selecionará de <b>{{ cnpj }}</b> no ambiente <b>{{ ambiente }}</b> (certificado <b>{{ cert_tipo }}</b>).
+        Você selecionará de <b>{{ cnpj }}</b> no ambiente <b>{{ ambiente }}</b> (certificado <b>{{ certificado }}</b>).
     </div>
 
-    <form method="post" action="/checklist">
+    <form method="post" action="/executar">
         <input type="hidden" name="cnpj" value="{{ cnpj }}">
         <input type="hidden" name="ambiente" value="{{ ambiente }}">
-        <input type="hidden" name="certificado" value="{{ cert_tipo }}">
+        <input type="hidden" name="certificado" value="{{ certificado }}">
 
         <h2>Selecione os processos que deseja extrair</h2>
 

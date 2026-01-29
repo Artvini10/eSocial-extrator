@@ -46,22 +46,24 @@ def checklist(request: Request):
 @router.post("/executar", response_class=HTMLResponse)
 def executar(
     request: Request,
-    ano_inicial: int = Form(...),
-    ano_final: int = Form(...),
-    processos: list[str] = Form(default=[]),
+    ano_ini: int = Form(...),
+    mes_ini: int = Form(...),
+    ano_fim: int = Form(...),
+    mes_fim: int = Form(...),
+    temas: list[str] = Form(default=[]),
 ):
     cnpj = request.cookies.get("cnpj", "")
     ambiente = request.cookies.get("ambiente", "producao_restrita")
     certificado = request.cookies.get("certificado", "A1")
 
-    if not processos:
+    if not temas:
         return templates.TemplateResponse(
-            request, "resultado.html", {"ok": False, "erro": "Selecione pelo menos 1 processo."},
+            request, "resultado.html", {"ok": False, "erro": "Selecione pelo menos 1 tema."},
             status_code=400,
         )
 
-    periodo = f"{ano_inicial}-01..{ano_final}-12"
-    eventos = expandir_temas(processos)
+    periodo = f"{ano_ini:04d}-{mes_ini:02d}..{ano_fim:04d}-{mes_fim:02d}"
+    eventos = expandir_temas(temas)
 
     ws = WSEsocialAdapter(cnpj, ambiente)
     retornos = ws.executar(eventos, periodo)
@@ -71,7 +73,7 @@ def executar(
         "ambiente": ambiente,
         "certificado": certificado,
         "periodo": periodo,
-        "processos": processos,
+        "temas": temas,
         "eventos_executados": eventos,
         "retornos": retornos,
     }
