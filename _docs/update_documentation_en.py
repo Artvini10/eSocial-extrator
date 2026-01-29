@@ -80,9 +80,9 @@ def get_git_status():
 def update_documentation():
     """Update the English documentation with current code structure."""
     
-    doc_path = "eSocial_Extractor_Documentation.docx"
+    doc_path = Path("..") / "Documentação" / "eSocial_Extractor_Documentation.docx"
     
-    if not os.path.exists(doc_path):
+    if not doc_path.exists():
         print(f"[ERROR] Document not found: {doc_path}")
         return False
     
