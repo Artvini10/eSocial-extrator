@@ -2,13 +2,13 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 import os
+from pathlib import Path
 
 from src.services.orchestrator import expandir_temas
 from src.services.ws_adapter import WSEsocialAdapter
 
 router = APIRouter()
 
-# Resolve template path relative to src directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
